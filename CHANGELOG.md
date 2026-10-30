@@ -4,6 +4,97 @@ All notable changes to fixbuddy are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project aims to follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+## [0.9.4] - 2026-09-30
+
+### Changed
+- RUN uses ScoutBuddy's classic Buddy summary and workflow panels, with the
+  original animated face in the activity strip and `d` for the complete log.
+- Run details retain the approved repository, issue selection, agents and merge
+  mode even if settings are edited afterwards. Elapsed time stops at process exit.
+
+## [0.9.3] - 2026-09-30
+
+### Added
+- ScoutBuddy-family activity panel, elapsed-time Buddy animation and local
+  phrases in the terminal UI, with wrapped timestamped session history.
+- Short process-finished/stopped effects; an exit code never claims a merge.
+
+### Fixed
+- Compact terminal panels stay above the activity area; errors are redacted
+  before truncation, including GitHub and preview failure paths.
+
+## [0.9.2] - 2026-09-27
+
+### Fixed
+- After a human merges a FixBuddy PR and GitHub closes its issue, the next
+  write run replaces the stale `fix:pr-open` label with `fix:applied` only if
+  GitHub's latest closure event identifies that merged PR. Unclear or failed
+  closure reads leave labels unchanged; dry-run stays read-only.
+
+## [0.9.1] - 2026-09-27
+
+### Fixed
+- Codex agent decisions now use `codex exec --output-last-message` instead of
+  its full transcript. Duplicate markers in CLI logs can no longer falsely
+  reject a valid final approval; a missing final message, nonzero exit or
+  timeout cannot authorize a push. Raw output remains in the run log.
+
+## [0.9.0] - 2026-09-27
+
+### Added
+- One `fixbuddy` executable bundles the Bash pipeline, wizard and Python 3
+  terminal UI. An interactive `fixbuddy` opens the UI; `--wizard` opens the
+  wizard; direct CLI flags and `run` retain non-interactive use.
+- The UI loads all repositories visible to the authenticated `gh` account and
+  their open issues, including accessible private repositories. It excludes
+  pull requests and marks repositories with failed reads as unknown.
+- The installer downloads and verifies the one-file distribution by default;
+  `--local` installs the same bundle from a checkout. Explicit v0.8 refs keep
+  their legacy installer behavior.
+
+### Changed
+- The demo mode was removed. The UI starts with the live read-only inventory.
+- Before a write run, the checkout's origin fetch and push URLs must match
+  the selected GitHub repository, including after agent and check stages.
+- The UI displays unknown totals on an account-wide GitHub API failure and
+  passes the exact ordered preview issue IDs to the confirmed run.
+
+## [0.8.0] - 2026-09-27
+
+### Added
+- Optional Python 3 terminal UI with a read-only queue, run setup, issue
+  selection, confirmation, live activity and a visual demo. The source checkout
+  can run it directly; the updated installer accepts `--with-tui` for refs that
+  contain the UI and its checksum.
+- `--dry-run --json` exposes the same actionable queue to the UI and scripts.
+- Paginated issue reads remove the 200-issue ceiling for both the queue and
+  closed-PR reconciliation.
+- The composite action exposes `logs-path` and copies only its own run logs.
+
+### Changed
+- The GitHub Action description now spells out "pull requests" and names the
+  supported agents for its Marketplace listing (change `73e723b`).
+
+### Fixed
+- Agent branch switches and unexpected base changes are detected and blocked
+  before review or push. Verify-time ref changes also block after recovery;
+  fetch and base-update failures block the issue before verification.
+- Closed PRs with a stale `fix/issue-N` remote branch can be retried using a
+  lease pinned to the observed remote SHA; open PRs are left alone.
+- Review approval requires one exact final marker. Ambiguous or prefixed
+  markers and nonzero reviewer exits cannot authorize a push. Push uses the
+  reviewed SHA, then checks the remote tip before PR creation.
+- A failed PR creation retains the pushed branch for recovery instead of
+  deleting a replaced stale branch. The terminal UI invalidates old issue
+  selections when setup or preview state changes.
+- One-second agent timeouts no longer wait for a ten-second polling interval;
+  a separate watchdog marker survives concurrent agent output.
+- `--help` prints the complete header even as options are added.
+- Auto-merge is off by default in the CLI and Action. The wizard's autonomous
+  choice passes `--auto-merge` explicitly.
+
 ## [0.7.1] - 2026-06-13
 
 ### Added
@@ -105,6 +196,13 @@ to existing flags.
 
 Predate this changelog. See the git history and the `v0.4.0` / `v0.3.2` tags.
 
+[Unreleased]: https://github.com/Codevena/fixbuddy/compare/v0.9.4...HEAD
+[0.9.4]: https://github.com/Codevena/fixbuddy/compare/v0.9.3...v0.9.4
+[0.9.3]: https://github.com/Codevena/fixbuddy/compare/v0.9.2...v0.9.3
+[0.9.2]: https://github.com/Codevena/fixbuddy/compare/v0.9.1...v0.9.2
+[0.9.1]: https://github.com/Codevena/fixbuddy/compare/v0.9.0...v0.9.1
+[0.9.0]: https://github.com/Codevena/fixbuddy/compare/v0.8.0...v0.9.0
+[0.8.0]: https://github.com/Codevena/fixbuddy/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/Codevena/fixbuddy/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/Codevena/fixbuddy/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/Codevena/fixbuddy/compare/v0.5.0...v0.6.0
